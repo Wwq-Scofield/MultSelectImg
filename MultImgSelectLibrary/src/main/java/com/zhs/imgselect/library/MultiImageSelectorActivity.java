@@ -4,29 +4,42 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ListPopupWindow;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.GridView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.zhs.imgselect.library.adapter.FolderAdapter;
+import com.zhs.imgselect.library.adapter.ImageGridAdapter;
 import com.zhs.imgselect.library.bean.Folder;
 import com.zhs.imgselect.library.bean.Image;
 import com.zhs.imgselect.library.listener.ImgChooseListener;
+import com.zhs.imgselect.library.util.ScreenUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.zhs.imgselect.library.ImgSelectConfig.LOADER_ALL;
 
 /**
  * Created by Administrator on 2017/9/7.
@@ -42,6 +55,12 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
     private boolean hasFolderGened = false;
     // folder result data set
     private ArrayList<Folder> mResultFolder = new ArrayList<>();
+    private GridView photiogrid;
+    private ImageGridAdapter mAdapter;
+    private TextView tvShowPopFolder;
+    private RelativeLayout footer;
+    private ListPopupWindow folderWindow;
+    private FolderAdapter folderAdapter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +72,22 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
         maxCount = intent.getIntExtra(ImgSelectConfig.EXTRA_MAX_COUNT, ImgSelectConfig.DEFAULT_COUNT);
         isMultChoose=intent.getBooleanExtra(ImgSelectConfig.EXTRA_IS_MULT_CHOOSE,false);
         isShowCamera= intent.getBooleanExtra(ImgSelectConfig.EXTRA_IS_SHOW_CAMERA, false);
+
+        initView();
+
+        getSupportLoaderManager().restartLoader(LOADER_ALL, null, mLoaderCallback);
+    }
+
+    private void initView() {
         btnSelect= (Button) findViewById(R.id.commit);
+        tvShowPopFolder= (TextView) findViewById(R.id.category_btn);
+        footer= (RelativeLayout) findViewById(R.id.footer);
         btnSelect.setOnClickListener(this);
-        getSupportLoaderManager().restartLoader(ImgSelectConfig.LOADER_ALL, null, mLoaderCallback);
+        tvShowPopFolder.setOnClickListener(this);
+        photiogrid= (GridView) findViewById(R.id.photiogrid);
+        mAdapter=new ImageGridAdapter(this,isShowCamera,3);
+        photiogrid.setAdapter(mAdapter);
+
     }
 
     @Override
@@ -91,6 +123,19 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
                 setResult(RESULT_CANCELED);
             }
             finish();
+        }else if(R.id.category_btn==id){
+            if(folderWindow == null){
+                createPopupFolderList();
+            }
+
+            if (folderWindow.isShowing()) {
+                folderWindow.dismiss();
+            } else {
+                folderWindow.show();
+                int index = folderAdapter.getSelectIndex();
+                index = index == 0 ? index : index - 1;
+                folderWindow.getListView().setSelection(index);
+            }
         }
     }
 
@@ -108,7 +153,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             CursorLoader cursorLoader = null;
-            if(id == ImgSelectConfig.LOADER_ALL) {
+            if(id == LOADER_ALL) {
                 cursorLoader = new CursorLoader(MultiImageSelectorActivity.this,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
                         IMAGE_PROJECTION[4]+">0 AND "+IMAGE_PROJECTION[3]+"=? OR "+IMAGE_PROJECTION[3]+"=? ",
@@ -121,7 +166,6 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
             }
             return cursorLoader;
         }
-
         private boolean fileExist(String path){
             if(!TextUtils.isEmpty(path)){
                 return new File(path).exists();
@@ -145,6 +189,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
                             image = new Image(path, name, dateTime);
                             images.add(image);
                         }
+
                         if( !hasFolderGened ) {
                             // get all folder data
                             File folderFile = new File(path).getParentFile();
@@ -168,6 +213,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
 
                     }while(data.moveToNext());
                     Log.d("wwq","imgs: "+images.toString());
+                    mAdapter.setData(images);
                 }else{
                     Log.d("wwq","data is null");
                 }
@@ -190,4 +236,64 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
         }
         return null;
     }
+
+
+    /**
+     * Create popup ListView
+     */
+    private void createPopupFolderList() {
+        Point point = ScreenUtils.getScreenSize(MultiImageSelectorActivity.this);
+        int width = point.x;
+        int height = (int) (point.y * (4.5f/8.0f));
+        folderWindow = new ListPopupWindow(MultiImageSelectorActivity.this);
+        folderWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        folderWindow.setAdapter(folderAdapter);
+        folderWindow.setContentWidth(width);
+        folderWindow.setWidth(width);
+        folderWindow.setHeight(height);
+        folderWindow.setAnchorView(footer);
+        folderWindow.setModal(true);
+        folderWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                folderAdapter.setSelectIndex(i);
+
+                final int index = i;
+                final AdapterView v = adapterView;
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        folderWindow.dismiss();
+
+                        if (index == 0) {
+                            MultiImageSelectorActivity.this.getSupportLoaderManager().restartLoader(LOADER_ALL, null, mLoaderCallback);
+                            tvShowPopFolder.setText("All Images");
+                            if (isShowCamera) {
+                                mAdapter.setShowCamera(true);
+                            } else {
+                                mAdapter.setShowCamera(false);
+                            }
+                        } else {
+                            Folder folder = (Folder) v.getAdapter().getItem(index);
+                            if (null != folder) {
+                                mAdapter.setData(folder.images);
+                                tvShowPopFolder.setText(folder.name);
+                                if (resultList != null && resultList.size() > 0) {
+                                    mAdapter.setDefaultSelected(resultList);
+                                }
+                            }
+                            mAdapter.setShowCamera(false);
+                        }
+
+                        photiogrid.smoothScrollToPosition(0);
+                    }
+                }, 100);
+
+            }
+        });
+    }
+
+
 }

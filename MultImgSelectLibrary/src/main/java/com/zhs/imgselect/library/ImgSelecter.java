@@ -66,7 +66,6 @@ public class ImgSelecter {
         }
         activity.startActivityForResult(createIntent(activity), requestCode);
     }
-
     private Intent createIntent(Context context) {
         Intent intent = new Intent(context, MultiImageSelectorActivity.class);
         intent.putExtra(ImgSelectConfig.EXTRA_IS_SHOW_CAMERA, this.isShowCamera);

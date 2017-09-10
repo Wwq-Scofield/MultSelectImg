@@ -23,7 +23,7 @@
         android:textSize="14sp" />
     <GridView
         android:layout_below="@id/commit"
-        android:id="@+id/grid"
+        android:id="@+id/photiogrid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:horizontalSpacing="@dimen/mis_space_size"
@@ -38,7 +38,7 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize">
-        <Button
+        <TextView
             android:id="@+id/category_btn"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
