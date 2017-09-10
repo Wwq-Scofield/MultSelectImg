@@ -14,4 +14,6 @@ public class ImgSelectConfig {
     // loaders
     public static final int LOADER_ALL = 0;
     public static final int LOADER_CATEGORY = 1;
+
+    public static final int REQUEST_CAMERA = 100;
 }

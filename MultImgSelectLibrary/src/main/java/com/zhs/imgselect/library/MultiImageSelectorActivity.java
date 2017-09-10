@@ -1,17 +1,24 @@
 package com.zhs.imgselect.library;
 
+import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -27,19 +34,23 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhs.imgselect.library.adapter.FolderAdapter;
 import com.zhs.imgselect.library.adapter.ImageGridAdapter;
 import com.zhs.imgselect.library.bean.Folder;
 import com.zhs.imgselect.library.bean.Image;
 import com.zhs.imgselect.library.listener.ImgChooseListener;
+import com.zhs.imgselect.library.util.FileUtil;
 import com.zhs.imgselect.library.util.ScreenUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.zhs.imgselect.library.ImgSelectConfig.LOADER_ALL;
+import static com.zhs.imgselect.library.ImgSelectConfig.REQUEST_CAMERA;
 
 /**
  * Created by Administrator on 2017/9/7.
@@ -61,6 +72,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
     private RelativeLayout footer;
     private ListPopupWindow folderWindow;
     private FolderAdapter folderAdapter;
+    private File  mTmpFile;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +100,126 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
         mAdapter=new ImageGridAdapter(this,isShowCamera,3);
         photiogrid.setAdapter(mAdapter);
 
+
+        photiogrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mAdapter.isShowCamera()) {
+                    if (i == 0) {
+                        showCameraAction();
+                    } else {
+                        Image image = (Image) adapterView.getAdapter().getItem(i);
+                        selectImageFromGrid(image);
+                    }
+                } else {
+                    Image image = (Image) adapterView.getAdapter().getItem(i);
+                    selectImageFromGrid(image);
+                }
+            }
+        });
+
+        folderAdapter = new FolderAdapter(this);
+
+    }
+    /**
+     * Open camera
+     */
+    private void showCameraAction() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED){
+            requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    "mis_permission_rationale_write_storage",
+                    123);
+        }else {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                try {
+                    mTmpFile=FileUtil.createTmpFile(this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (mTmpFile != null && mTmpFile.exists()) {
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
+                    startActivityForResult(intent, REQUEST_CAMERA);
+                } else {
+                    Toast.makeText(this,"mis_error_image_not_exist", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this,"mis_msg_no_camera", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+
+    /**
+     * notify callback
+     * @param image image data
+     */
+    private void selectImageFromGrid(Image image ) {
+        if(image != null) {
+            if(isMultChoose) {
+                if (resultList.contains(image.path)) {
+                    resultList.remove(image.path);
+                        onImageUnselected(image.path);
+                } else {
+                    if(maxCount == resultList.size()){
+                        Toast.makeText(this,"mis_msg_amount_limit", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    resultList.add(image.path);
+                        onImageSelected(image.path);
+                }
+                mAdapter.select(image);
+            }else if(!isMultChoose){
+                  onSingleImageSelected(image.path);
+            }
+        }
+    }
+
+
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void requestPermission(final String permission, String rationale, final int requestCode){
+        if(shouldShowRequestPermissionRationale(permission)){
+            new AlertDialog.Builder(this)
+                    .setTitle("mis_permission_dialog_title")
+                    .setMessage(rationale)
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @TargetApi(Build.VERSION_CODES.M)
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            requestPermissions(new String[]{permission}, requestCode);
+                        }
+                    })
+                    .setNegativeButton("cancel", null)
+                    .create().show();
+        }else{
+            requestPermissions(new String[]{permission}, requestCode);
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CAMERA){
+            if(resultCode == Activity.RESULT_OK) {
+                if (mTmpFile != null) {
+                      onCameraShot(mTmpFile);
+                }
+            }else{
+                // delete tmp file
+                while (mTmpFile != null && mTmpFile.exists()){
+                    boolean success = mTmpFile.delete();
+                    if(success){
+                        mTmpFile = null;
+                    }
+                }
+            }
+        }
+
     }
 
     @Override
@@ -107,6 +239,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Img
 
     @Override
     public void onCameraShot(File imageFile) {
+        Log.d("wwq","imgeFile: "+imageFile!=null?imageFile.getAbsolutePath():null);
 
     }
 

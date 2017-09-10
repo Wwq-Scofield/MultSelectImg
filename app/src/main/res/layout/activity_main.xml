@@ -10,4 +10,11 @@
         android:layout_height="wrap_content"
         android:text="Hello World!"   />
 
+    <Button
+        android:onClick="showNotif"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ShowNotification"/>
+
 </LinearLayout>
