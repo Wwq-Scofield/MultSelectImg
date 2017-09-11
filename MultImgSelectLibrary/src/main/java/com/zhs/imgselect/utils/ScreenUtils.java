@@ -1,4 +1,4 @@
-package com.zhs.imgselect.library.util;
+package com.zhs.imgselect.utils;
 
 import android.content.Context;
 import android.graphics.Point;

@@ -1,4 +1,4 @@
-package com.zhs.imgselect.library.adapter;
+package com.zhs.imgselect.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,8 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.zhs.imgselect.library.R;
-import com.zhs.imgselect.library.bean.Folder;
+import com.zhs.imgselect.R;
+import com.zhs.imgselect.bean.Folder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,10 +78,10 @@ public class FolderAdapter extends BaseAdapter {
         }
         if (holder != null) {
             if(i == 0){
-                holder.name.setText("All Images");
+                holder.name.setText(R.string.mis_folder_all);
                 holder.path.setText("/sdcard");
                 holder.size.setText(String.format("%d%s",
-                        getTotalImageSize(), "Shot"));
+                        getTotalImageSize(), mContext.getResources().getString(R.string.mis_photo_unit)));
                 if(mFolders.size()>0){
                     Folder f = mFolders.get(0);
                     if (f != null) {
@@ -150,9 +150,9 @@ public class FolderAdapter extends BaseAdapter {
             name.setText(data.name);
             path.setText(data.path);
             if (data.images != null) {
-                size.setText(String.format("%d%s", data.images.size(), "shot"));
+                size.setText(String.format("%d%s", data.images.size(), mContext.getResources().getString(R.string.mis_photo_unit)));
             }else{
-                size.setText("*"+"shot");
+                size.setText("*"+mContext.getResources().getString(R.string.mis_photo_unit));
             }
             if (data.cover != null) {
                 // 显示图片

@@ -1,4 +1,4 @@
-package com.zhs.imgselect.library.bean;
+package com.zhs.imgselect.bean;
 
 import android.text.TextUtils;
 

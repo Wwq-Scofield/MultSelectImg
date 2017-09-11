@@ -1,30 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/black"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#181819"
-    android:orientation="vertical">
-    <Button
-        android:id="@+id/commit"
-        android:layout_marginTop="30dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="right"
-        android:layout_marginRight="16dp"
-        android:minHeight="1dp"
-        android:minWidth="1dp"
-        android:background="@drawable/btn_img_ok_bg"
-        android:paddingBottom="5dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="5dp"
-        android:text="确定"
-        android:textSize="14sp" />
+    android:layout_height="match_parent">
+
     <GridView
-        android:layout_below="@id/commit"
-        android:id="@+id/photiogrid"
+        android:id="@+id/grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:horizontalSpacing="@dimen/mis_space_size"
@@ -39,13 +21,14 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize">
-        <TextView
+
+        <Button
             android:id="@+id/category_btn"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:layout_centerVertical="true"
-            android:textColor="#fff"
-            android:text="所有图片"
+            android:textColor="@color/mis_folder_text_color"
+            tools:text="所有图片"
             android:textSize="16sp"
             android:gravity="center_vertical"
             android:drawableRight="@drawable/mis_text_indicator"
@@ -56,7 +39,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
 
-    </RelativeLayout>
-
+        </RelativeLayout>
 
 </RelativeLayout>

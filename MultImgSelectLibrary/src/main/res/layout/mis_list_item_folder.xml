@@ -12,6 +12,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:id="@+id/cover"
+        tools:src="@drawable/mis_btn_back"
         android:layout_gravity="center_vertical"
         android:scaleType="centerInside"
         android:src="@drawable/mis_default_error"

@@ -1,4 +1,4 @@
-package com.zhs.imgselect.library.bean;
+package com.zhs.imgselect.bean;
 
 import android.text.TextUtils;
 
@@ -15,14 +15,6 @@ public class Image {
         this.path = path;
         this.name = name;
         this.time = time;
-    }
-    @Override
-    public String toString() {
-        return "Image{" +
-                "path='" + path + '\'' +
-                ", name='" + name + '\'' +
-                ", time=" + time +
-                '}';
     }
 
     @Override

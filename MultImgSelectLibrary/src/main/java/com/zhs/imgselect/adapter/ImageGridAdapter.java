@@ -1,4 +1,4 @@
-package com.zhs.imgselect.library.adapter;
+package com.zhs.imgselect.adapter;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -11,8 +11,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.zhs.imgselect.library.R;
-import com.zhs.imgselect.library.bean.Image;
+import com.zhs.imgselect.MultiImageSelectorFragment;
+import com.zhs.imgselect.bean.Image;
+import com.zhs.imgselect.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -223,7 +224,7 @@ public class ImageGridAdapter extends BaseAdapter {
                 Picasso.with(mContext)
                         .load(imageFile)
                         .placeholder(R.drawable.mis_default_error)
-                        //.tag(MultiImageSelectorFragment.TAG)
+                        .tag(MultiImageSelectorFragment.TAG)
                         .resize(mGridWidth, mGridWidth)
                         .centerCrop()
                         .into(image);
