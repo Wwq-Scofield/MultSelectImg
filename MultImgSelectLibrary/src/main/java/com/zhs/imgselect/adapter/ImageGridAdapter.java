@@ -3,6 +3,7 @@ package com.zhs.imgselect.adapter;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +13,13 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 import com.zhs.imgselect.MultiImageSelectorFragment;
-import com.zhs.imgselect.bean.Image;
 import com.zhs.imgselect.R;
+import com.zhs.imgselect.bean.Image;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 图片Adapter
- * Created by Nereo on 2015/4/7.
- * Updated by nereo on 2016/1/19.
- */
 public class ImageGridAdapter extends BaseAdapter {
 
     private static final int TYPE_CAMERA = 0;
@@ -204,18 +200,22 @@ public class ImageGridAdapter extends BaseAdapter {
         void bindData(final Image data){
             if(data == null) return;
             // 处理单选和多选状态
+
             if(showSelectIndicator){
                 indicator.setVisibility(View.VISIBLE);
                 if(mSelectedImages.contains(data)){
+                    Log.d("wwq","contains: ");
                     // 设置选中状态
                     indicator.setImageResource(R.drawable.mis_btn_selected);
                     mask.setVisibility(View.VISIBLE);
                 }else{
+                    Log.d("wwq","no contains: ");
                     // 未选择
                     indicator.setImageResource(R.drawable.mis_btn_unselected);
                     mask.setVisibility(View.GONE);
                 }
             }else{
+                Log.d("wwq","else showSelectIndicator: "+showSelectIndicator);
                 indicator.setVisibility(View.GONE);
             }
             File imageFile = new File(data.path);

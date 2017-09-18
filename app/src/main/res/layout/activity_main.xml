@@ -12,6 +12,7 @@
 
     <Button
         android:onClick="showNotif"
+        android:id="@+id/showNotif"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl_title"
+
+        android:text="addData" />
+
+    <com.zhs.imgselect.share.view.ObservableScrollView
+        android:layout_width="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:id="@+id/rlHeader"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:background="@mipmap/bg">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="20dp">
+                    <com.zhs.imgselect.share.view.CircleImageView
+                        android:id="@+id/iv_icon"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@mipmap/icon"
+                        android:layout_marginLeft="20dp"/>
+                    <LinearLayout
+                        android:layout_toRightOf="@id/iv_icon"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="于海"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:textColor="#fff"/>
+                        <TextView
+                            android:layout_marginTop="5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="上海复旦大学"
+                            android:textSize="14sp"
+                            android:textColor="#ddd"/>
+                    </LinearLayout>
+
+                </RelativeLayout>
+            </RelativeLayout>
+            <android.support.v7.widget.RecyclerView
+                android:layout_marginTop="10dp"
+                android:id="@+id/recycleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </com.zhs.imgselect.share.view.ObservableScrollView>
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#16dfc8" />-->
+
+        <RelativeLayout
+            android:id="@+id/rlbackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#38b2ff"
+            android:alpha="0"></RelativeLayout>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="10dp"
+            android:src="@drawable/btn_clear_gray" />
+        <TextView
+            android:id="@+id/tvName"
+            android:alpha="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="于海"
+            android:background="#00000000"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            />
+        <ImageView
+            android:id="@+id/ivAdd"
+            android:onClick="AddData"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/btn_keyboard" />
+
+
+        <!--<ImageView-->
+        <!--android:id="@+id/ivHeader"-->
+        <!--android:layout_width="55dp"-->
+        <!--android:layout_height="55dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginBottom="30dp"-->
+        <!--android:src="@drawable/code" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/tvName"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:paddingTop="10dp"-->
+        <!--android:layout_toRightOf="@+id/ivHeader"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:text="于海"-->
+        <!--android:textColor="#fff"-->
+        <!--android:textSize="20sp" />-->
+        <!--<TextView-->
+        <!--android:id="@+id/tv_school"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_toRightOf="@+id/ivHeader"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_below="@+id/tvName"-->
+        <!--android:text="复旦大学 教授"-->
+        <!--android:textColor="#fff"-->
+        <!--android:textSize="13sp" />-->
+
+    </RelativeLayout>
+
+</RelativeLayout>

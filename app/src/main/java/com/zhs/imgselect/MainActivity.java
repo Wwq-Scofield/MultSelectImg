@@ -8,19 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.RemoteViews;
-
-import com.squareup.picasso.Picasso;
-
-import java.io.IOException;
-
-
+import com.zhs.app.imgselect.R;
 public class MainActivity extends AppCompatActivity {
     private NotificationManager manager;
     private Notification.Builder mBuilder;
@@ -33,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
 //        ImgSelecter.init().maxCount(9).setChooseMode(true).showCamera(true).startMultChooseActivity(this,1);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void showNotif(View view){
         showBigPictureNotificationWithMZ(this);
 
@@ -41,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void showBigPictureNotificationWithMZ(Context context) {
         RemoteViews  mRemoteView = new RemoteViews(this.getPackageName(), R.layout.layout_notification);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
