@@ -8,7 +8,7 @@ import android.widget.RelativeLayout;
 /**
  * Created by nereo on 15/11/10.
  */
-public class SquareFrameLayout extends RelativeLayout{
+public class SquareFrameLayout extends FrameLayout{
     public SquareFrameLayout(Context context) {
         super(context);
     }

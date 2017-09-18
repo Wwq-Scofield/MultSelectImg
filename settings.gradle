@@ -1,1 +1,1 @@
-include ':app', ':MultImgSelectLibrary', ':ImgSelect'
+include ':app', ':MultImgSelectLibrary'
