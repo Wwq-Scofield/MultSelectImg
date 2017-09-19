@@ -29,9 +29,6 @@ public class MainActivity extends AppCompatActivity {
         showBigPictureNotificationWithMZ(this);
 
     }
-
-
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void showBigPictureNotificationWithMZ(Context context) {
         RemoteViews  mRemoteView = new RemoteViews(this.getPackageName(), R.layout.layout_notification);

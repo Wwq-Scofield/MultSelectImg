@@ -5,6 +5,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.zhs.imgselect.share.adapter.DensityUtil;
@@ -14,16 +15,19 @@ import com.zhs.imgselect.share.adapter.DensityUtil;
  */
 
 public class SwipeView extends RelativeLayout {
+    private View decorView;
     public SwipeView(Context context) {
         super(context);
     }
 
     public SwipeView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
+        decorView=findViewById(android.R.id.content);
+}
 
     public SwipeView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        decorView=findViewById(android.R.id.content);
     }
 
     private int startX;
@@ -33,41 +37,36 @@ public class SwipeView extends RelativeLayout {
         int action = ev.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                startX = (int) ev.getX();
+                startX = (int) ev.getRawX();
                 return super.onInterceptTouchEvent(ev);
             case MotionEvent.ACTION_MOVE:
-                int currentX = (int) ev.getX();
-                if (currentX - startX > DensityUtil.dip2px(getContext(), 5)) {
-                    return true;
-                } else {
+                int currentX = (int) ev.getRawX();
+                if(decorView.getX()<0){
                     return super.onInterceptTouchEvent(ev);
                 }
+                decorView.setX(currentX);
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
         }
         return false;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        Log.d("wwq","onTouchEvent///");
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                int currentX= (int) event.getX();
-                Log.d("wwq","currentX-startX= "+(currentX-startX));
-                if((currentX-startX)>0){
-                    setX(currentX-startX);
-                    return true;
-                }else{
-                    return false;
-                }
-            case MotionEvent.ACTION_UP:
-                startAnim();
-                break;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        int action = event.getAction();
+//        Log.d("wwq","onTouchEvent///");
+//        switch (action) {
+//            case MotionEvent.ACTION_DOWN:
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//
+//            case MotionEvent.ACTION_UP:
+//                startAnim();
+//                break;
+//        }
+//        return false;
+//    }
 
     private void startAnim() {
         int width=getResources().getDisplayMetrics().widthPixels;

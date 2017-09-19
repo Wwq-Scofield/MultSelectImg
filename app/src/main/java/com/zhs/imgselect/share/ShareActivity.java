@@ -1,33 +1,44 @@
 package com.zhs.imgselect.share;
 
-import android.animation.ValueAnimator;
-import android.graphics.Color;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhs.app.imgselect.R;
+import com.zhs.imgselect.MultiImageSelectorActivity;
+import com.zhs.imgselect.select.PostImagesActivity;
 import com.zhs.imgselect.share.adapter.DensityUtil;
 import com.zhs.imgselect.share.adapter.ShareAdapter;
-import com.zhs.imgselect.share.adapter.UrlUtils;
 import com.zhs.imgselect.share.bean.PhotoInfo;
 import com.zhs.imgselect.share.bean.TeacherInfoItem;
 import com.zhs.imgselect.share.view.ObservableScrollView;
+import com.zhs.imgselect.utils.FileUtils;
+import com.zhs.popmenu.PopMenuManager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static com.zhs.imgselect.select.PostImagesActivity.REQUEST_IMAGE;
 
 /**
  * Created by Administrator on 2017/9/11.
@@ -35,16 +46,11 @@ import java.util.Random;
 
 public class ShareActivity extends AppCompatActivity implements ObservableScrollView.ScrollViewListener {
     private RecyclerView recyclerView;
+    private View rootView;
     private LinearLayoutManager manager;
     private ShareAdapter adapter;
     private List<TeacherInfoItem> mDatas;
     private List<PhotoInfo> mPhotos = new ArrayList<>();
-//    private RelativeLayout rlHead;
-//    private TextView tvSchool;
-//    private ImageView ivHeader;
-//    private TextView tvName;
-//    private int mMinHight;
-//    private int mOrignHight;
     private ArrayList<String> mPics=new ArrayList<>();
     private String  content;
     private  String address;
@@ -52,6 +58,9 @@ public class ShareActivity extends AppCompatActivity implements ObservableScroll
     private ObservableScrollView scrollView;
     private TextView tvName;
     private RelativeLayout rlbackground;
+    private LinearLayout llCenterView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayout llEmpty;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,56 +77,137 @@ public class ShareActivity extends AppCompatActivity implements ObservableScroll
         scrollView= (ObservableScrollView) findViewById(R.id.scrollView);
         tvName= (TextView) findViewById(R.id.tvName);
         rlbackground= (RelativeLayout) findViewById(R.id.rlbackground);
-//        rlHead = (RelativeLayout) findViewById(R.id.rl_title);
-//        tvSchool= (TextView) findViewById(R.id.tv_school);
-//        ivHeader= (ImageView) findViewById(R.id.ivHeader);
-//        tvName= (TextView) findViewById(R.id.tvName);
-
-        ViewTreeObserver vto = rlHeader.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                rlHeader.getViewTreeObserver().removeGlobalOnLayoutListener(
-                        this);
-                rlHeadHight = rlHeader.getHeight()-DensityUtil.dip2px(ShareActivity.this,20);
-                scrollView.setScrollViewListener(ShareActivity.this);
-            }
-        });
+        llCenterView= (LinearLayout) findViewById(R.id.ll_center_view);
+        swipeRefreshLayout= (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        llEmpty= (LinearLayout) findViewById(R.id.rl_empty);
+        rootView=findViewById(R.id.rootView);
         manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
         adapter = new ShareAdapter(this);
         recyclerView.setAdapter(adapter);
         mDatas = new ArrayList<>();
         adapter.setDatas(mDatas);
-        add(0);
+//        add(0);
         adapter.notifyDataSetChanged();
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_8290AF,R.color.colorAccent);
+        swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                        if(mDatas==null||mDatas.size()<=0){
+                            recyclerView.setVisibility(View.GONE);
+                            llEmpty.setVisibility(View.VISIBLE);
+                        }else{
+                            recyclerView.setVisibility(View.VISIBLE);
+                            llEmpty.setVisibility(View.GONE);
+                        }
+                        Random random = new Random();
+                        int i = random.nextInt(5);
+                        add(i);
+                        adapter.notifyDataSetChanged();
+                    }
 
-
-//        mOrignHight = rlHead.getLayoutParams().height;
-//        mMinHight = DensityUtil.dip2px(this,60);
-//        mNeedDistance = mOrignHight - mMinHight;
-//        Log.d("wwq", "rlHead.getHeight: " + rlHead.getLayoutParams().height);
-//        RelativeLayout.LayoutParams textParams = (RelativeLayout.LayoutParams) tvSchool.getLayoutParams();
-//        mTextLeft = textParams.leftMargin;
-//        mTextTop = textParams.topMargin;
-//
-//        RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) ivHeader.getLayoutParams();
-//        ivTop = ivParams.topMargin;
-//        RelativeLayout.LayoutParams tvNameParams = (RelativeLayout.LayoutParams) tvName.getLayoutParams();
-//        tvNameTop = tvNameParams.topMargin;
-//        tvNameLeft=tvNameParams.leftMargin;
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                },2000);
+            }
         });
+        if (scrollView != null) {
+            scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                @Override
+                public void onScrollChanged() {
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setEnabled(scrollView.getScrollY() == 0);
+                        Log.d("wwq","--123--");
+                    }
+                }
+            });
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+                recyclerView.setVisibility(View.GONE);
+                llEmpty.setVisibility(View.VISIBLE);
+            }
+        },2000);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus){
+            rlHeadHight = rlHeader.getHeight()-DensityUtil.dip2px(ShareActivity.this,20);
+            scrollView.setScrollViewListener(ShareActivity.this);
+        }
+    }
 
     public void AddData(View vc) {
-        Random random = new Random();
-        int i = random.nextInt(5);
-        add(i);
-//        adapter.setDatas(mDatas);
-        adapter.notifyDataSetChanged();
+        showOutMenu();
+    }
+    private void showOutMenu() {
+        PopMenuManager.getInstance().init(this, new PopMenuManager.Builder()
+                .setFirstContent("相机")
+                .setSecendContent("相册")
+                .setThirdtContent("取消"), new PopMenuManager.OnViewClickListener() {
+            @Override
+            public void onMenuClick(int flag) {
+                switch (flag){
+                    case PopMenuManager.MENU_FIRST:
+                        showCameraAction();
+                        break;
+                    case PopMenuManager.MENU_SECEND:
+                        PostImagesActivity.startPostGallery(ShareActivity.this,REQUEST_IMAGE);
+                        break;
+                    case PopMenuManager.MENU_THIRD:
+                        break;
+                }
+
+            }
+        }).showOutMenu(rootView);
+    }
+
+    File mTmpFile;
+    /**
+     * Open camera
+     */
+    private void showCameraAction() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED){
+            Log.d("wwq","no permission");
+        }else {
+            Log.d("wwq","has permission");
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                try {
+                    mTmpFile = FileUtils.createTmpFile(this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (mTmpFile != null && mTmpFile.exists()) {
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
+                    startActivityForResult(intent, 111);
+                } else {
+                    Toast.makeText(this, com.zhs.imgselect.R.string.mis_error_image_not_exist, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, com.zhs.imgselect.R.string.mis_msg_no_camera, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("wwq","requestCode:"+requestCode);
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==111&&resultCode==RESULT_OK){
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mTmpFile)));
+            PostImagesActivity.startPostActivity(this,mTmpFile.getAbsolutePath());
+        }else if(requestCode==REQUEST_IMAGE&&resultCode==RESULT_OK){
+            PostImagesActivity.startPostGallery(this,data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT));
+        }
     }
 
     private void add(int i) {
@@ -127,12 +217,14 @@ public class ShareActivity extends AppCompatActivity implements ObservableScroll
         teacherInfoItem.setContent("");
         teacherInfoItem.setType(1);
         mPhotos.clear();
-        for (int m=0;m<mPics.size();m++){
-            PhotoInfo p1 = new PhotoInfo();
-            p1.url = mPics.get(m);
-            p1.w = 700;
-            p1.h = 467;
-            mPhotos.add(p1);
+        if(mPics!=null){
+            for (int m=0;m<mPics.size();m++){
+                PhotoInfo p1 = new PhotoInfo();
+                p1.url = mPics.get(m);
+                p1.w = 700;
+                p1.h = 467;
+                mPhotos.add(p1);
+            }
         }
         teacherInfoItem.setContent(content);
         teacherInfoItem.setAddress(address);
@@ -143,170 +235,24 @@ public class ShareActivity extends AppCompatActivity implements ObservableScroll
         } else {
             adapter.getDatas().addAll(mDatas);
         }
-
-
     }
-
-    private int mLastY = 0;  //最后的点
-    private static int mNeedDistance;   // 需要滑动的距离
-    private int mCurrentDistance;
-    private VelocityTracker mVelocityTracker;
-    private static final int SNAP_VELOCITY = 400;
-
     @Override
     public void onScrollChanged(ObservableScrollView scrollView, int x, int y, int oldx, int oldy) {
         Log.d("wwq","y: "+y);
         if (y <= 0) {
             rlHeader.setAlpha(1);
-            tvName.setAlpha(0);
+            llCenterView.setAlpha(0);
             rlbackground.setAlpha(0);
         } else if (y > 0 && y <= rlHeadHight) {
             float scale = (float) y / rlHeadHight;
             float alpha = (scale);
-            tvName.setAlpha(alpha);
+            llCenterView.setAlpha(alpha);
             rlbackground.setAlpha(alpha);
             rlHeader.setAlpha(1-alpha);
         } else {
-            tvName.setAlpha(1);
+            llCenterView.setAlpha(1);
             rlbackground.setAlpha(1);
             rlHeader.setAlpha(0);
-//            tvName.setBackgroundColor(Color.argb((int) 255, 227, 29, 26));
         }
     }
-//    @Override
-//    public boolean dispatchTouchEvent(MotionEvent ev) {
-//        if (mVelocityTracker == null) {
-//            mVelocityTracker = VelocityTracker.obtain();
-//        }
-//        mVelocityTracker.addMovement(ev);
-//        switch (ev.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                mLastY = (int) ev.getY();
-//                Log.d("wwq", "event down");
-//                return super.dispatchTouchEvent(ev);
-//            case MotionEvent.ACTION_MOVE:
-//                int y = (int) ev.getY();
-//                int dy = mLastY - y;
-////                if(dy<=0){
-////                    return super.dispatchTouchEvent(ev); //把事件传递进去
-////                }
-//                Log.d("wwq", "mCurrentDistance:" + mCurrentDistance);
-//                if (mCurrentDistance <= 0 && dy < 0) {
-//                    return super.dispatchTouchEvent(ev); //把事件传递进去
-//                }
-//                if (mCurrentDistance >= mNeedDistance && dy > 0) {
-//                    return super.dispatchTouchEvent(ev); //把事件传递进去
-//                }
-//                changeView(dy);
-//                mLastY = y;
-//                break;
-//            case MotionEvent.ACTION_UP:
-//
-//                if (mVelocityTracker != null) {
-//                    final VelocityTracker velocityTracker = mVelocityTracker;
-//                    velocityTracker.computeCurrentVelocity(1000);
-//                    int velocityY = (int) velocityTracker.getYVelocity();
-//                    if (velocityY > SNAP_VELOCITY){//下划
-//                        Log.d("wwq","下滑");
-//
-//                    } else if (velocityY < -SNAP_VELOCITY){//上划
-//                        Log.d("wwq","上划");
-//                        startAnim();
-////                        int width=getResources().getDisplayMetrics().widthPixels;
-////                        final RelativeLayout.LayoutParams textParams = (RelativeLayout.LayoutParams) tvSchool.getLayoutParams();
-////                        textParams.leftMargin = (int) (width/3);
-////                        int mTextNeedMoveDistanceY =DensityUtil.dip2px(this,40);
-////                        textParams.topMargin = (int) (mTextTop-mTextNeedMoveDistanceY);
-////                        tvSchool.setLayoutParams(textParams);
-////                        tvSchool.setAlpha(1);
-//                    } else {
-//
-//                    }
-//                    checkTheHeight();
-//                    mVelocityTracker.recycle();
-//                    mVelocityTracker = null;
-//                }
-//                return super.dispatchTouchEvent(ev);
-//
-//        }
-//        return false;
-//    }
-
-//    private void startAnim() {
-//        final int width=getResources().getDisplayMetrics().widthPixels;
-//        final int mTextNeedMoveDistanceY =DensityUtil.dip2px(this,40);
-//        final RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams) tvName.getLayoutParams();
-//        final int mTextNeedMoveDistanceX1 = width / 4;
-//        ValueAnimator valueAnimator=ValueAnimator.ofFloat(0,1).setDuration(500);
-//        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-//                float value= (float) valueAnimator.getAnimatedValue();
-//
-//
-//                nameParams.leftMargin = (int) (mTextNeedMoveDistanceX1 * (value));
-//                nameParams.topMargin = (int) (mTextNeedMoveDistanceY/2 * value);
-//                tvName.setLayoutParams(nameParams);
-//                ivHeader.setAlpha(1-value);
-//            }
-//        });
-//        valueAnimator.start();
-//
-//    }
-
-//    private float mRate;
-//    private void changeView(int dy) {
-//
-//        final ViewGroup.LayoutParams layoutParams = rlHead.getLayoutParams();
-//        layoutParams.height = layoutParams.height - dy;
-//        rlHead.setLayoutParams(layoutParams);
-//        checkTheHeight();
-//        rlHead.requestLayout();
-//        mCurrentDistance = mOrignHight - rlHead.getLayoutParams().height;
-//        mRate = (float) (mCurrentDistance * 1.0 / mNeedDistance);
-////        tvSchool.setAlpha(mRate);
-//
-//        int width=getResources().getDisplayMetrics().widthPixels;
-//        int mTextNeedMoveDistanceX = width / 3 + DensityUtil.dip2px(this,20);
-//        int mTextNeedMoveDistanceY =DensityUtil.dip2px(this,40);
-//        final RelativeLayout.LayoutParams textParams = (RelativeLayout.LayoutParams) tvSchool.getLayoutParams();
-//        textParams.leftMargin = (int) (mTextNeedMoveDistanceX * mRate);
-//        textParams.topMargin = (int) (mTextNeedMoveDistanceY * mRate);
-//        tvSchool.setLayoutParams(textParams);
-//
-//
-//        final RelativeLayout.LayoutParams ivParams = (RelativeLayout.LayoutParams) ivHeader.getLayoutParams();
-////        ivParams.leftMargin = (int) (DensityUtil.dip2px(this,100) * mRate);
-//        ivParams.topMargin = (int) (ivTop-mTextNeedMoveDistanceY * mRate);
-//        ivHeader.setLayoutParams(ivParams);
-//        ivHeader.setAlpha(1-mRate);
-//
-//        int mTextNeedMoveDistanceX1 = width / 4;
-//        final RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams) tvName.getLayoutParams();
-//        nameParams.leftMargin = (int) (mTextNeedMoveDistanceX1 * (mRate));
-//        nameParams.topMargin = (int) (mTextNeedMoveDistanceY/2 * mRate);
-//        tvName.setLayoutParams(nameParams);
-////        tvName.setScaleX((float) (0.7*(1-mRate)));
-////        tvName.setScaleY((float) (0.7*(1-mRate)));
-//        Log.d("wwq", "mRate: " + (1-mRate));
-//
-//    }
-//
-//    /**
-//     * 检查上边界和下边界
-//     */
-//    private void checkTheHeight() {
-//        final ViewGroup.LayoutParams layoutParams = rlHead.getLayoutParams();
-//        if (layoutParams.height < mMinHight) {
-//            layoutParams.height = mMinHight;
-//            rlHead.setLayoutParams(layoutParams);
-//            rlHead.requestLayout();
-//        }
-//        if (layoutParams.height > mOrignHight) {
-//            layoutParams.height = mOrignHight;
-//            rlHead.setLayoutParams(layoutParams);
-//            rlHead.requestLayout();
-//        }
-//
-//    }
 }

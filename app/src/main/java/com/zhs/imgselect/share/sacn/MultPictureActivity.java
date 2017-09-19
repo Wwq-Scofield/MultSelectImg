@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhs.app.imgselect.R;
+import com.zhs.popmenu.PopMenuManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class MultPictureActivity extends AppCompatActivity {
     private List<String> mListUrl;
     private ViewPager mViewPager;
     private TextView mTextView;
+    private View rootView;
     private static final String MULTI_IMAGE_URL = "MULTI_IMAGE_URL";
     private static final String MULTI_IMAGE_POS = "MULTI_IMAGE_POS";
     public static void startActivity(Context context, int pos, ArrayList<String> list) {
@@ -48,6 +50,7 @@ public class MultPictureActivity extends AppCompatActivity {
         currentPos = getIntent().getIntExtra(MULTI_IMAGE_POS, 0);
         mViewPager= (ViewPager) findViewById(R.id.picture_multi_pager);
         mTextView= (TextView) findViewById(R.id.picture_multi_pager_bottom);
+        rootView=findViewById(R.id.rl_root);
         mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -83,6 +86,29 @@ public class MultPictureActivity extends AppCompatActivity {
         });
     }
 
+    private void showOutMenu() {
+        PopMenuManager.getInstance().init(this, new PopMenuManager.Builder()
+                .setFirstContent("相机")
+                .setSecendContent("相册")
+                .setThirdtContent("取消"), new PopMenuManager.OnViewClickListener() {
+            @Override
+            public void onMenuClick(int flag) {
+                switch (flag){
+                    case PopMenuManager.MENU_FIRST:
+
+                        break;
+                    case PopMenuManager.MENU_SECEND:
+
+                        break;
+                    case PopMenuManager.MENU_THIRD:
+
+                        break;
+                }
+
+            }
+        }).showOutMenu(rootView);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -92,46 +118,4 @@ public class MultPictureActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
-    public PopupWindow window = null;
-    private void showOutMenu() {
-        LayoutInflater layoutIn = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = layoutIn.inflate(R.layout.pop_pic_delete, null);
-        LinearLayout newpopwindow = (LinearLayout) view.findViewById(R.id.newpopwindow);
-        newpopwindow.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                if (window != null && window.isShowing()) {
-                    window.dismiss();
-                    window = null;
-                }
-            }
-        });
-        Button btn1 = (Button) view.findViewById(R.id.popmenu_btn1);
-        Button btn2 = (Button) view.findViewById(R.id.popmenu_btn2);
-        Button btn3 = (Button) view.findViewById(R.id.popmenu_btn3);
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-        btn3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-        if (window == null) {
-            window = new PopupWindow(view, android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT, true);
-            window.setBackgroundDrawable(new BitmapDrawable());
-        }
-        window.showAtLocation(findViewById(R.id.rl_root), Gravity.BOTTOM, 0, 0);
-    }
-
 }

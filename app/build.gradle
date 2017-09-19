@@ -30,6 +30,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.amap.api:location:latest.integration'
     compile 'com.amap.api:search:latest.integration'
-    compile 'com.github.Wwq-Scofield:MultSelectImg:1.0.2'
-    compile 'com.github.Wwq-Scofield:TimePicker:1.0.3'
+    compile 'com.github.Wwq-Scofield:MultSelectImg:1.0.3'
+    compile 'com.github.Wwq-Scofield:TimePicker:1.0.4'
+    compile 'com.github.Wwq-Scofield:PopMenu:1.0.1'
 }

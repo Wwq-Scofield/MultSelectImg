@@ -24,7 +24,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/MIS_NO_ACTIONBAR">
-        <activity android:name="com.zhs.imgselect.select.MainActivity" >
+        <activity android:name="com.zhs.imgselect.share.ShareActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,12 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.zhs.imgselect.select.PostImagesActivity" />
-        <activity android:name="com.zhs.imgselect.share.ShareActivity" />
-        <activity
-            android:name="com.zhs.imgselect.ScrollingActivity"
-            android:label="@string/title_activity_scrolling">
-
-        </activity>
+        <!--<activity android:name="com.zhs.imgselect.share.ShareActivity" />-->
 
 
         <activity android:name="com.zhs.imgselect.share.sacn.MultPictureActivity"/>

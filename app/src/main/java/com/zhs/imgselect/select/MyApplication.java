@@ -3,14 +3,8 @@ package com.zhs.imgselect.select;
 import android.app.Application;
 import android.content.Context;
 import com.zhs.app.imgselect.R;
-/**
- * 自定义 Application
- * Created by kuyue on 2017/7/12 上午10:26.
- * 邮箱:595327086@qq.com
- */
 
 public class MyApplication extends Application {
-
     private static MyApplication app;
     private Context mContext;
 

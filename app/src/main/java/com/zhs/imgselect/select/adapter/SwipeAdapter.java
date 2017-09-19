@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.zhs.app.imgselect.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class SwipeAdapter extends BaseAdapter {
 
-    private List<String> mDatas;
+    private ArrayList<String> mDatas;
     private LayoutInflater mLayoutInflater;
     private Context mContext;
 
@@ -28,7 +29,7 @@ public class SwipeAdapter extends BaseAdapter {
         mLayoutInflater=LayoutInflater.from(mContext);
     }
 
-    public void setData(List<String> list){
+    public void setData(ArrayList<String> list){
         this.mDatas=list;
         notifyDataSetChanged();
     }
