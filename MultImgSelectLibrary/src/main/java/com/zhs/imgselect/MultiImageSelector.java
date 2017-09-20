@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class MultiImageSelector {
 
     public static final String EXTRA_RESULT = MultiImageSelectorActivity.EXTRA_RESULT;
-
+    public static final String BACK_UP_IMG_DIR="com.imgs";
     private boolean mShowCamera = true;
     private int mMaxCount = 9;
     private int mMode = MultiImageSelectorActivity.MODE_MULTI;

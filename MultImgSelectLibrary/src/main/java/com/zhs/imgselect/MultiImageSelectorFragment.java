@@ -434,6 +434,7 @@ public class MultiImageSelectorFragment extends Fragment {
                         String name = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
                         long dateTime = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[2]));
                         if(!fileExist(path)){continue;}
+                        if(path.contains(MultiImageSelector.BACK_UP_IMG_DIR)){continue;}
                         Image image = null;
                         if (!TextUtils.isEmpty(name)) {
                             image = new Image(path, name, dateTime);

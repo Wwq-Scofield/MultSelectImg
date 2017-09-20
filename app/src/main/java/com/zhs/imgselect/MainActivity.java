@@ -1,6 +1,7 @@
 package com.zhs.imgselect;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,7 +28,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void showNotif(View view){
         showBigPictureNotificationWithMZ(this);
-
+        MultiImageSelector.create()
+                .showCamera(false)
+                .count(9)
+                .multi()
+                .start(this, 1002);
     }
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void showBigPictureNotificationWithMZ(Context context) {
