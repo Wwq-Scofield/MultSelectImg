@@ -8,9 +8,9 @@
     <application
         android:allowBackup="true"
         android:supportsRtl="true">
-
         <activity android:name=".MultiImageSelectorActivity"
             android:launchMode="singleTask"
+            android:label="图片选择"
             android:screenOrientation="portrait"/>
     </application>
 

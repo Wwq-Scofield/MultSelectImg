@@ -60,10 +60,10 @@ public class MultiImageSelectorActivity extends AppCompatActivity
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("图片选择");
         if(toolbar != null){
             setSupportActionBar(toolbar);
         }
-
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
