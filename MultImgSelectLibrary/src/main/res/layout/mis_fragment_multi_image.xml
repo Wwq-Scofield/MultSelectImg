@@ -17,7 +17,6 @@
     <RelativeLayout
         android:clickable="true"
         android:id="@+id/footer"
-        android:visibility="gone"
         android:background="#cc000000"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
